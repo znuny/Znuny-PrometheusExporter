@@ -19,7 +19,6 @@ use parent qw(Kernel::System::Daemon::BaseDaemon);
 
 our @ObjectDependencies = (
     'Kernel::Config',
-    'Kernel::System::DB',
     'Kernel::System::Log',
     'Kernel::System::Ticket',
     'Kernel::System::Queue',
@@ -28,7 +27,6 @@ our @ObjectDependencies = (
     'Kernel::System::Service',
     'Kernel::System::User',
     'Kernel::System::AuthSession',
-    'Kernel::System::DateTime',
 );
 
 =head1 NAME
@@ -64,30 +62,14 @@ sub new {
     my $Self = {};
     bless $Self, $Type;
 
-    # Get objects in constructor to save performance.
-    $Self->{ConfigObject}  = $Kernel::OM->Get('Kernel::Config');
-    $Self->{DBObject}      = $Kernel::OM->Get('Kernel::System::DB');
-    $Self->{LogObject}     = $Kernel::OM->Get('Kernel::System::Log');
-    $Self->{TicketObject}  = $Kernel::OM->Get('Kernel::System::Ticket');
-    $Self->{QueueObject}   = $Kernel::OM->Get('Kernel::System::Queue');
-    $Self->{StateObject}   = $Kernel::OM->Get('Kernel::System::State');
-    $Self->{UserObject}    = $Kernel::OM->Get('Kernel::System::User');
-    $Self->{SessionObject} = $Kernel::OM->Get('Kernel::System::AuthSession');
+    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    $Self->{Port} = $Self->{ConfigObject}->Get('Daemon::PrometheusExporter::Port') || 9405;
-    $Self->{Bind} = $Self->{ConfigObject}->Get('Daemon::PrometheusExporter::Bind') || '127.0.0.1';
+    $Self->{Port} = $ConfigObject->Get('Daemon::PrometheusExporter::Port') || 9405;
+    $Self->{Bind} = $ConfigObject->Get('Daemon::PrometheusExporter::Bind') || '127.0.0.1';
 
     # Optional feature flags — checked once at startup.
-    $Self->{ServiceEnabled} = $Self->{ConfigObject}->Get('Ticket::Service') ? 1 : 0;
-    $Self->{TypeEnabled}    = $Self->{ConfigObject}->Get('Ticket::Type')    ? 1 : 0;
-
-    # Only instantiate Service/Type objects when the feature is active.
-    if ( $Self->{ServiceEnabled} ) {
-        $Self->{ServiceObject} = $Kernel::OM->Get('Kernel::System::Service');
-    }
-    if ( $Self->{TypeEnabled} ) {
-        $Self->{TypeObject} = $Kernel::OM->Get('Kernel::System::Type');
-    }
+    $Self->{ServiceEnabled} = $ConfigObject->Get('Ticket::Service') ? 1 : 0;
+    $Self->{TypeEnabled}    = $ConfigObject->Get('Ticket::Type')    ? 1 : 0;
 
     # Sleep 1 second between Run() cycles; keeps the loop responsive
     # without busy-waiting.
@@ -113,12 +95,6 @@ Returns false if the database is not reachable or the socket cannot be bound.
 sub PreRun {
     my ( $Self, %Param ) = @_;
 
-    # Check if database is on-line.
-    if ( !$Self->{DBObject}->Ping() ) {
-        sleep 10;
-        return;
-    }
-
     # Open a non-blocking server socket so Run() can call accept() without
     # stalling the Daemon loop.
     #
@@ -142,14 +118,14 @@ sub PreRun {
     }
 
     if ( !$Self->{ServerSocket} ) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "PrometheusExporter: Cannot bind to $Self->{Bind}:$Self->{Port} - $!",
         );
         return;
     }
 
-    $Self->{LogObject}->Log(
+    $Kernel::OM->Get('Kernel::System::Log')->Log(
         Priority => 'notice',
         Message  => "PrometheusExporter: Listening on $Self->{Bind}:$Self->{Port}",
     );
@@ -177,7 +153,7 @@ sub Run {
 
     eval { $Self->_HandleRequest($Client) };
     if ($@) {
-        $Self->{LogObject}->Log(
+        $Kernel::OM->Get('Kernel::System::Log')->Log(
             Priority => 'error',
             Message  => "PrometheusExporter: Request handler error - $@",
         );
@@ -297,7 +273,7 @@ sub _HandleRequest {
         my $T0 = time();
         my ( $Body, $Success ) = eval { $Self->_CollectMetrics() };
         if ($@) {
-            $Self->{LogObject}->Log(
+            $Kernel::OM->Get('Kernel::System::Log')->Log(
                 Priority => 'error',
                 Message  => "PrometheusExporter: Metric collection failed - $@",
             );
@@ -332,6 +308,12 @@ sub _HandleRequest {
 sub _CollectMetrics {
     my ($Self) = @_;
 
+    my $TicketObject  = $Kernel::OM->Get('Kernel::System::Ticket');
+    my $QueueObject   = $Kernel::OM->Get('Kernel::System::Queue');
+    my $StateObject   = $Kernel::OM->Get('Kernel::System::State');
+    my $UserObject    = $Kernel::OM->Get('Kernel::System::User');
+    my $SessionObject = $Kernel::OM->Get('Kernel::System::AuthSession');
+
     my $Out = '';
 
     # -------------------------------------------------------------------
@@ -340,7 +322,7 @@ sub _CollectMetrics {
     {
         my @Lines;
         for my $StateType (qw(Open Pending Closed)) {
-            my $Count = $Self->{TicketObject}->TicketSearch(
+            my $Count = $TicketObject->TicketSearch(
                 StateType => $StateType,
                 UserID    => 1,
                 Result    => 'COUNT',
@@ -362,10 +344,10 @@ sub _CollectMetrics {
     # 2. Ticket count per individual state
     # -------------------------------------------------------------------
     {
-        my %States = $Self->{StateObject}->StateList( UserID => 1 );
+        my %States = $StateObject->StateList( UserID => 1 );
         my @Lines;
         for my $StateID ( sort { $a <=> $b } keys %States ) {
-            my $Count = $Self->{TicketObject}->TicketSearch(
+            my $Count = $TicketObject->TicketSearch(
                 StateIDs => [$StateID],
                 UserID   => 1,
                 Result   => 'COUNT',
@@ -387,13 +369,13 @@ sub _CollectMetrics {
     # 3. Open + total tickets per queue
     # -------------------------------------------------------------------
     {
-        my %Queues = $Self->{QueueObject}->GetAllQueues();
+        my %Queues = $QueueObject->GetAllQueues();
         my ( @OpenLines, @TotalLines );
 
         for my $QueueID ( sort { $a <=> $b } keys %Queues ) {
             my $QLabel = _Label( $Queues{$QueueID} );
 
-            my $OpenCount = $Self->{TicketObject}->TicketSearch(
+            my $OpenCount = $TicketObject->TicketSearch(
                 QueueIDs  => [$QueueID],
                 StateType => 'Open',
                 UserID    => 1,
@@ -405,7 +387,7 @@ sub _CollectMetrics {
                 $QLabel, $QueueID, $OpenCount
                 );
 
-            my $TotalCount = $Self->{TicketObject}->TicketSearch(
+            my $TotalCount = $TicketObject->TicketSearch(
                 QueueIDs => [$QueueID],
                 UserID   => 1,
                 Result   => 'COUNT',
@@ -433,35 +415,35 @@ sub _CollectMetrics {
     # 4. Escalation / SLA metrics
     # -------------------------------------------------------------------
     {
-        my $Escalated = $Self->{TicketObject}->TicketSearch(
+        my $Escalated = $TicketObject->TicketSearch(
             TicketEscalationTimeOlderMinutes => -1,
             StateType                        => 'Open',
             UserID                           => 1,
             Result                           => 'COUNT',
         ) // 0;
 
-        my $ResponseOverdue = $Self->{TicketObject}->TicketSearch(
+        my $ResponseOverdue = $TicketObject->TicketSearch(
             TicketEscalationResponseTimeOlderMinutes => -1,
             StateType                                => 'Open',
             UserID                                   => 1,
             Result                                   => 'COUNT',
         ) // 0;
 
-        my $UpdateOverdue = $Self->{TicketObject}->TicketSearch(
+        my $UpdateOverdue = $TicketObject->TicketSearch(
             TicketEscalationUpdateTimeOlderMinutes => -1,
             StateType                              => 'Open',
             UserID                                 => 1,
             Result                                 => 'COUNT',
         ) // 0;
 
-        my $SolutionOverdue = $Self->{TicketObject}->TicketSearch(
+        my $SolutionOverdue = $TicketObject->TicketSearch(
             TicketEscalationSolutionTimeOlderMinutes => -1,
             StateType                                => 'Open',
             UserID                                   => 1,
             Result                                   => 'COUNT',
         ) // 0;
 
-        my $EscalationWarn = $Self->{TicketObject}->TicketSearch(
+        my $EscalationWarn = $TicketObject->TicketSearch(
             TicketEscalationTimeNewerMinutes => -30,
             TicketEscalationTimeOlderMinutes =>  1,
             StateType                        => 'Open',
@@ -500,11 +482,11 @@ sub _CollectMetrics {
     # 5. Agent counts
     # -------------------------------------------------------------------
     {
-        my %ValidAgents = $Self->{UserObject}->UserList(
+        my %ValidAgents = $UserObject->UserList(
             Type  => 'Short',
             Valid => 1
         );
-        my %AllAgents = $Self->{UserObject}->UserList(
+        my %AllAgents = $UserObject->UserList(
             Type  => 'Short',
             Valid => 0
         );
@@ -525,7 +507,7 @@ sub _CollectMetrics {
     # 6. Active sessions
     # -------------------------------------------------------------------
     {
-        my @SessionIDs    = $Self->{SessionObject}->GetAllSessionIDs();
+        my @SessionIDs    = $SessionObject->GetAllSessionIDs();
         my %SessionCounts = (
             agent    => 0,
             customer => 0,
@@ -533,7 +515,7 @@ sub _CollectMetrics {
         );
 
         for my $SessionID (@SessionIDs) {
-            my %Data = $Self->{SessionObject}->GetSessionIDData( SessionID => $SessionID );
+            my %Data = $SessionObject->GetSessionIDData( SessionID => $SessionID );
             my $Type = $Data{UserType} // '';
             if    ( $Type eq 'User' )     { $SessionCounts{agent}++ }
             elsif ( $Type eq 'Customer' ) { $SessionCounts{customer}++ }
@@ -557,7 +539,7 @@ sub _CollectMetrics {
     {
         my $DayStart = $Kernel::OM->Create('Kernel::System::DateTime')->Format( Format => '%Y-%m-%d 00:00:00' );
 
-        my $CreatedToday = $Self->{TicketObject}->TicketSearch(
+        my $CreatedToday = $TicketObject->TicketSearch(
             TicketCreateTimeNewerDate => $DayStart,
             UserID                    => 1,
             Result                    => 'COUNT',
@@ -574,11 +556,11 @@ sub _CollectMetrics {
     # 8. Ticket counts per type (only when Ticket::Type is active)
     # -------------------------------------------------------------------
     if ( $Self->{TypeEnabled} ) {
-        my %Types = $Self->{TypeObject}->TypeList( Valid => 1 );
+        my %Types = $Kernel::OM->Get('Kernel::System::Type')->TypeList( Valid => 1 );
         my @Lines;
 
         for my $TypeID ( sort { $a <=> $b } keys %Types ) {
-            my $Count = $Self->{TicketObject}->TicketSearch(
+            my $Count = $TicketObject->TicketSearch(
                 TypeIDs => [$TypeID],
                 UserID  => 1,
                 Result  => 'COUNT',
@@ -604,7 +586,7 @@ sub _CollectMetrics {
     # we emit a dedicated "no_service" bucket for tickets without one.
     # -------------------------------------------------------------------
     if ( $Self->{ServiceEnabled} ) {
-        my %Services = $Self->{ServiceObject}->ServiceList(
+        my %Services = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
             Valid  => 1,
             UserID => 1,
         );
@@ -612,7 +594,7 @@ sub _CollectMetrics {
         my $AssignedTotal = 0;
 
         for my $ServiceID ( sort { $a <=> $b } keys %Services ) {
-            my $Count = $Self->{TicketObject}->TicketSearch(
+            my $Count = $TicketObject->TicketSearch(
                 ServiceIDs => [$ServiceID],
                 UserID     => 1,
                 Result     => 'COUNT',
@@ -626,7 +608,7 @@ sub _CollectMetrics {
         }
 
         # Tickets with no service assigned — total minus all service buckets.
-        my $TotalAll = $Self->{TicketObject}->TicketSearch(
+        my $TotalAll = $TicketObject->TicketSearch(
             UserID => 1,
             Result => 'COUNT',
         ) // 0;

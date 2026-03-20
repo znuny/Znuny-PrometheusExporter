@@ -49,6 +49,10 @@ The following metrics help monitor SLA compliance at a glance:
 
 When the `Ticket::Type` feature is enabled in Znuny, the metric `znuny_tickets_by_type` is emitted with `type` and `type_id` labels, providing ticket counts per ticket type.
 
+## Service metrics
+
+When the `Ticket::Service` feature is enabled in Znuny, the metric `znuny_tickets_by_service` is emitted with `service` and `service_id` labels. Tickets without a service assigned are reported under the bucket `service=""` / `service_id="0"`.
+
 ## Scrape health metrics
 
 Each scrape also emits:
