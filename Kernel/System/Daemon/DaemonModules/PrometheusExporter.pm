@@ -202,13 +202,22 @@ sub PostRun {
 
     $Self->{DiscardCount}--;
 
-    if ( $Self->{DiscardCount} == 0 ) {
+    if ( $Self->{DiscardCount} <= 0 ) {
         if ( $Self->{Debug} ) {
             print "  $Self->{DaemonName} will be stopped and set for restart!\n";
         }
-    }
 
-    return if $Self->{DiscardCount} <= 0;
+        # Close the socket before signalling a restart so the port is
+        # immediately available when the new instance calls PreRun().
+        # Without this, DESTROY may run after the new PreRun() attempts
+        # to bind, causing "Address already in use".
+        if ( $Self->{ServerSocket} ) {
+            close( $Self->{ServerSocket} );
+            delete $Self->{ServerSocket};
+        }
+
+        return;
+    }
 
     return 1;
 }
