@@ -576,13 +576,13 @@ sub _CollectMetrics {
             ) // 0;
             push @Lines,
                 sprintf(
-                'znuny_tickets_by_type{type="%s",type_id="%d"} %d',
+                'znuny_tickets_by_tickettype{tickettype="%s",tickettype_id="%d"} %d',
                 _Label( $Types{$TypeID} ), $TypeID, $Count
                 );
         }
 
         $Out .= _GaugeBlock(
-            Name  => 'znuny_tickets_by_type',
+            Name  => 'znuny_tickets_by_tickettype',
             Help  => 'Ticket count per ticket type (only emitted when Ticket::Type is enabled)',
             Lines => \@Lines,
         );

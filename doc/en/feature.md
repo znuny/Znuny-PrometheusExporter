@@ -47,7 +47,7 @@ The following metrics help monitor SLA compliance at a glance:
 
 ## Ticket type metrics
 
-When the `Ticket::Type` feature is enabled in Znuny, the metric `znuny_tickets_by_type` is emitted with `type` and `type_id` labels, providing ticket counts per ticket type.
+When the `Ticket::Type` feature is enabled in Znuny, the metric `znuny_tickets_by_tickettype` is emitted with `tickettype` and `tickettype_id` labels, providing ticket counts per ticket type.
 
 ## Service metrics
 

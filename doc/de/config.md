@@ -31,9 +31,9 @@ Ersetzen Sie `localhost` durch den Hostnamen oder die IP-Adresse Ihres Znuny-Ser
 
 ## Optionale Funktionen
 
-### Ticket-Typen (`znuny_tickets_by_type`)
+### Ticket-Typen (`znuny_tickets_by_tickettype`)
 
-Die Metrik `znuny_tickets_by_type` wird nur ausgegeben, wenn die SysConfig-Option `Ticket::Type` aktiviert ist. Es ist keine weitere Konfiguration erforderlich — der Exporter erkennt die Einstellung automatisch beim Start.
+Die Metrik `znuny_tickets_by_tickettype` wird nur ausgegeben, wenn die SysConfig-Option `Ticket::Type` aktiviert ist. Es ist keine weitere Konfiguration erforderlich — der Exporter erkennt die Einstellung automatisch beim Start.
 
 ### Ticket-Services (`znuny_tickets_by_service`)
 

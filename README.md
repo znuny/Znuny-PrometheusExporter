@@ -38,7 +38,7 @@ The exporter is active immediately after installation with sensible defaults. Op
 | `znuny_agents_total` | `valid` | Agent accounts by validity |
 | `znuny_sessions_active` | `user_type` | Active sessions by user type (agent / customer) |
 | `znuny_tickets_created_today` | — | Tickets created since midnight (server local time) |
-| `znuny_tickets_by_type` | `type`, `type_id` | Ticket count per type (only when `Ticket::Type` is enabled) |
+| `znuny_tickets_by_tickettype` | `tickettype`, `tickettype_id` | Ticket count per type (only when `Ticket::Type` is enabled) |
 | `znuny_scrape_duration_seconds` | — | Time taken to collect all metrics |
 | `znuny_scrape_success` | — | `1` if last collection succeeded, `0` otherwise |
 

@@ -31,9 +31,9 @@ Replace `localhost` with the hostname or IP of your Znuny server if Prometheus r
 
 ## Optional features
 
-### Ticket types (`znuny_tickets_by_type`)
+### Ticket types (`znuny_tickets_by_tickettype`)
 
-The metric `znuny_tickets_by_type` is only emitted when the SysConfig option `Ticket::Type` is enabled. No additional configuration is required — the exporter detects the setting automatically at startup.
+The metric `znuny_tickets_by_tickettype` is only emitted when the SysConfig option `Ticket::Type` is enabled. No additional configuration is required — the exporter detects the setting automatically at startup.
 
 ### Ticket services
 

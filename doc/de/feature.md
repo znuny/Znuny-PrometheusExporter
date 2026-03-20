@@ -47,7 +47,7 @@ Die folgenden Metriken helfen dabei, die SLA-Einhaltung auf einen Blick zu über
 
 ## Ticket-Typ-Metriken
 
-Wenn die Funktion `Ticket::Type` in Znuny aktiviert ist, wird die Metrik `znuny_tickets_by_type` mit den Labels `type` und `type_id` ausgegeben und liefert Ticket-Anzahlen pro Ticket-Typ.
+Wenn die Funktion `Ticket::Type` in Znuny aktiviert ist, wird die Metrik `znuny_tickets_by_tickettype` mit den Labels `tickettype` und `tickettype_id` ausgegeben und liefert Ticket-Anzahlen pro Ticket-Typ.
 
 ## Service-Metriken
 
