@@ -95,6 +95,9 @@ Returns false if the database is not reachable or the socket cannot be bound.
 sub PreRun {
     my ( $Self, %Param ) = @_;
 
+    # Socket already open from a previous iteration — nothing to do.
+    return 1 if $Self->{ServerSocket};
+
     # Open a non-blocking server socket so Run() can call accept() without
     # stalling the Daemon loop.
     #
