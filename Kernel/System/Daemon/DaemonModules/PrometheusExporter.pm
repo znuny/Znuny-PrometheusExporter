@@ -28,6 +28,7 @@ our @ObjectDependencies = (
     'Kernel::System::Service',
     'Kernel::System::User',
     'Kernel::System::AuthSession',
+    'Kernel::System::DateTime',
 );
 
 =head1 NAME
@@ -265,8 +266,8 @@ sub _HandleRequest {
     chomp $RequestLine;
 
     # Drain remaining HTTP headers.
-    while ( my $Line = <$Client> ) {
-        last if $Line =~ m{^\r?\n$};
+    LAST: while ( my $Line = <$Client> ) {
+        last LAST if $Line =~ m{^\r?\n$};
     }
 
     my ( undef, $Path ) = $RequestLine =~ m{^([A-Z]+)\s+(\S+)};
@@ -534,11 +535,7 @@ sub _CollectMetrics {
     # 7. Tickets created today (local midnight boundary)
     # -------------------------------------------------------------------
     {
-        my @Now      = localtime( time() );
-        my $DayStart = sprintf(
-            '%04d-%02d-%02d 00:00:00',
-            $Now[5] + 1900, $Now[4] + 1, $Now[3]
-        );
+        my $DayStart = $Kernel::OM->Create('Kernel::System::DateTime')->Format( Format => '%Y-%m-%d 00:00:00' );
 
         my $CreatedToday = $Self->{TicketObject}->TicketSearch(
             TicketCreateTimeNewerDate => $DayStart,
