@@ -106,6 +106,7 @@ sub PreRun {
     # occurs when the daemon discards and restarts this module: the old
     # subprocess may still hold the port open for a brief moment even
     # though ReuseAddr is set.
+    my $LogObject  = $Kernel::OM->Get('Kernel::System::Log');
     my $MaxRetries = 10;
     ATTEMPT:
     for my $Attempt ( 1 .. $MaxRetries ) {
@@ -122,14 +123,14 @@ sub PreRun {
     }
 
     if ( !$Self->{ServerSocket} ) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "PrometheusExporter: Cannot bind to $Self->{Bind}:$Self->{Port} - $!",
         );
         return;
     }
 
-    $Kernel::OM->Get('Kernel::System::Log')->Log(
+    $LogObject->Log(
         Priority => 'notice',
         Message  => "PrometheusExporter: Listening on $Self->{Bind}:$Self->{Port}",
     );
@@ -155,9 +156,11 @@ sub Run {
 
     $Client->blocking(1);    # switch client socket to blocking for reading/writing
 
+    my $LogObject = $Kernel::OM->Get('Kernel::System::Log');
+
     eval { $Self->_HandleRequest($Client) };
     if ($@) {
-        $Kernel::OM->Get('Kernel::System::Log')->Log(
+        $LogObject->Log(
             Priority => 'error',
             Message  => "PrometheusExporter: Request handler error - $@",
         );
@@ -262,6 +265,7 @@ sub DESTROY {
 sub _HandleRequest {
     my ( $Self, $Client ) = @_;
 
+    my $LogObject   = $Kernel::OM->Get('Kernel::System::Log');
     my $RequestLine = <$Client> // return;
     chomp $RequestLine;
 
@@ -277,7 +281,7 @@ sub _HandleRequest {
         my $T0 = time();
         my ( $Body, $Success ) = eval { $Self->_CollectMetrics() };
         if ($@) {
-            $Kernel::OM->Get('Kernel::System::Log')->Log(
+            $LogObject->Log(
                 Priority => 'error',
                 Message  => "PrometheusExporter: Metric collection failed - $@",
             );
@@ -560,7 +564,8 @@ sub _CollectMetrics {
     # 8. Ticket counts per type (only when Ticket::Type is active)
     # -------------------------------------------------------------------
     if ( $Self->{TypeEnabled} ) {
-        my %Types = $Kernel::OM->Get('Kernel::System::Type')->TypeList( Valid => 1 );
+        my $TypeObject = $Kernel::OM->Get('Kernel::System::Type');
+        my %Types      = $TypeObject->TypeList( Valid => 1 );
         my @Lines;
 
         for my $TypeID ( sort { $a <=> $b } keys %Types ) {
@@ -590,7 +595,8 @@ sub _CollectMetrics {
     # we emit a dedicated "no_service" bucket for tickets without one.
     # -------------------------------------------------------------------
     if ( $Self->{ServiceEnabled} ) {
-        my %Services = $Kernel::OM->Get('Kernel::System::Service')->ServiceList(
+        my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
+        my %Services      = $ServiceObject->ServiceList(
             Valid  => 1,
             UserID => 1,
         );
