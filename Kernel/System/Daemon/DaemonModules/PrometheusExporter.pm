@@ -635,6 +635,80 @@ sub _CollectMetrics {
         );
     }
 
+    # -------------------------------------------------------------------
+    # 10. Open ticket counts per type (only when Ticket::Type is active)
+    # -------------------------------------------------------------------
+    if ( $Self->{TypeEnabled} ) {
+        my $TypeObject = $Kernel::OM->Get('Kernel::System::Type');
+        my %Types      = $TypeObject->TypeList( Valid => 1 );
+        my @Lines;
+
+        for my $TypeID ( sort { $a <=> $b } keys %Types ) {
+            my $Count = $TicketObject->TicketSearch(
+                TypeIDs   => [$TypeID],
+                StateType => 'Open',
+                UserID    => 1,
+                Result    => 'COUNT',
+            ) // 0;
+            push @Lines,
+                sprintf(
+                'znuny_open_tickets_by_tickettype{tickettype="%s",tickettype_id="%d"} %d',
+                _Label( $Types{$TypeID} ), $TypeID, $Count
+                );
+        }
+
+        $Out .= _GaugeBlock(
+            Name  => 'znuny_open_tickets_by_tickettype',
+            Help  => 'Open ticket count per ticket type (only emitted when Ticket::Type is enabled)',
+            Lines => \@Lines,
+        );
+    }
+
+    # -------------------------------------------------------------------
+    # 11. Open ticket counts per service (only when Ticket::Service is active)
+    # -------------------------------------------------------------------
+    if ( $Self->{ServiceEnabled} ) {
+        my $ServiceObject = $Kernel::OM->Get('Kernel::System::Service');
+        my %Services      = $ServiceObject->ServiceList(
+            Valid  => 1,
+            UserID => 1,
+        );
+        my @Lines;
+        my $AssignedOpenTotal = 0;
+
+        for my $ServiceID ( sort { $a <=> $b } keys %Services ) {
+            my $Count = $TicketObject->TicketSearch(
+                ServiceIDs => [$ServiceID],
+                StateType  => 'Open',
+                UserID     => 1,
+                Result     => 'COUNT',
+            ) // 0;
+            $AssignedOpenTotal += $Count;
+            push @Lines,
+                sprintf(
+                'znuny_open_tickets_by_service{service="%s",service_id="%d"} %d',
+                _Label( $Services{$ServiceID} ), $ServiceID, $Count
+                );
+        }
+
+        my $TotalOpen = $TicketObject->TicketSearch(
+            StateType => 'Open',
+            UserID    => 1,
+            Result    => 'COUNT',
+        ) // 0;
+        my $NoService = $TotalOpen - $AssignedOpenTotal;
+
+        push @Lines,
+            sprintf( 'znuny_open_tickets_by_service{service="",service_id="0"} %d', $NoService );
+
+        $Out .= _GaugeBlock(
+            Name => 'znuny_open_tickets_by_service',
+            Help =>
+                'Open ticket count per service; service="" means no service assigned (only emitted when Ticket::Service is enabled)',
+            Lines => \@Lines,
+        );
+    }
+
     return ( $Out, 1 );
 }
 
