@@ -121,14 +121,25 @@ sub PreRun {
 
     # Open a non-blocking server socket so Run() can call accept() without
     # stalling the Daemon loop.
-    $Self->{ServerSocket} = IO::Socket::INET->new(
-        LocalAddr => $Self->{Bind},
-        LocalPort => $Self->{Port},
-        Proto     => 'tcp',
-        Listen    => 10,
-        ReuseAddr => 1,
-        Blocking  => 0,
-    );
+    #
+    # Retry up to 10 times (20 s total) to handle the race condition that
+    # occurs when the daemon discards and restarts this module: the old
+    # subprocess may still hold the port open for a brief moment even
+    # though ReuseAddr is set.
+    my $MaxRetries = 10;
+    ATTEMPT:
+    for my $Attempt ( 1 .. $MaxRetries ) {
+        $Self->{ServerSocket} = IO::Socket::INET->new(
+            LocalAddr => $Self->{Bind},
+            LocalPort => $Self->{Port},
+            Proto     => 'tcp',
+            Listen    => 10,
+            ReuseAddr => 1,
+            Blocking  => 0,
+        );
+        last ATTEMPT if $Self->{ServerSocket};
+        sleep 2      if $Attempt < $MaxRetries;
+    }
 
     if ( !$Self->{ServerSocket} ) {
         $Self->{LogObject}->Log(
