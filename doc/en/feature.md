@@ -11,6 +11,9 @@ The following endpoints are available:
 | `/metrics` | Prometheus text exposition format (version 0.0.4) |
 | `/health` | Liveness check — returns `OK` |
 
+::: note :::
+A restart of the Znuny Daemon is required to have the exporter available.
+
 ## Ticket metrics
 
 Ticket counts are grouped in several ways to give full visibility into the current workload:
