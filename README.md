@@ -22,6 +22,9 @@ This add-on exposes a Prometheus-compatible `/metrics` HTTP endpoint directly fr
 - Install it via the package manager from the `Znuny Open Source Add-ons` repository.
 - Download the package and install it via the admin interface -> package manager.
 
+> [!IMPORTANT]  
+> The Znuny Daemon needs to be restarted after the installation.
+
 **Configuration**
 
 The exporter is active immediately after installation with sensible defaults. Optional settings are available in SysConfig under `Core::Daemon::PrometheusExporter`:
