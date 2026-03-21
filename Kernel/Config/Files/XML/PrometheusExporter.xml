@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <otrs_config version="2.0" init="Framework">
-
-    <!-- ================================================================
-         Register the DaemonModule with the Znuny Daemon scheduler.
-
-         MinimumSleepAfterExecution => 0 means the Daemon calls Run()
-         again immediately after it returns — giving us a tight loop that
-         checks for incoming HTTP connections every ~1 s (the IO::Select
-         timeout inside Run()).
-    ================================================================ -->
-    <Setting Name="DaemonModules###PrometheusExporter" Required="0" Valid="1">
+<Setting Name="DaemonModules###PrometheusExporter" Required="0" Valid="1">
         <Description Translatable="1">
             Prometheus metrics exporter daemon module.
             Exposes a /metrics HTTP endpoint on the configured port.
@@ -21,12 +12,6 @@
             </Hash>
         </Value>
     </Setting>
-
-    <!-- ================================================================
-         Port the exporter listens on.
-         Port 10111 is in the unofficial Prometheus exporter range.
-         Change this if it conflicts with another service.
-    ================================================================ -->
     <Setting Name="Daemon::PrometheusExporter::Port" Required="0" Valid="1">
         <Description Translatable="1">
             TCP port for the Prometheus metrics exporter (default: 10111).
@@ -36,13 +21,6 @@
             <Item ValueType="String" ValueRegex="^\d+$">10111</Item>
         </Value>
     </Setting>
-
-    <!-- ================================================================
-         IP address the exporter binds to.
-         Use 127.0.0.1 (default) so only local Prometheus can scrape.
-         Set to 0.0.0.0 if Prometheus runs on a separate host (and ensure
-         firewall rules are in place).
-    ================================================================ -->
     <Setting Name="Daemon::PrometheusExporter::Bind" Required="0" Valid="1">
         <Description Translatable="1">
             IP address the Prometheus metrics exporter binds to (default: 127.0.0.1).
@@ -53,5 +31,4 @@
             <Item ValueType="String">127.0.0.1</Item>
         </Value>
     </Setting>
-
 </otrs_config>

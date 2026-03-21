@@ -4,6 +4,10 @@
 
 Dieses Add-on integriert einen Prometheus-kompatiblen Metriken-Exporter direkt in den Znuny-Daemon-Prozess. Ein separates Skript, ein Cron-Job oder eine Service-Unit ist nicht erforderlich. Nach der Installation stellt der Daemon einen `/metrics`-HTTP-Endpunkt bereit, den jeder Prometheus-Server abfragen kann.
 
+::: tip :::
+**Es ist ein Neustart des Znuny Daemon ist nach der Installation des Add-ons notwendig.**
+:::::::::::
+
 Die folgenden Endpunkte stehen zur Verfügung:
 
 | Pfad | Beschreibung |
@@ -11,14 +15,9 @@ Die folgenden Endpunkte stehen zur Verfügung:
 | `/metrics` | Prometheus-Textformat (Version 0.0.4) |
 | `/health` | Liveness-Check — gibt `OK` zurück |
 
-
 ## Ticket-Metriken
 
 Ticket-Anzahlen werden auf verschiedene Arten gruppiert, um vollständige Transparenz über die aktuelle Arbeitslast zu bieten:
-
-- **Nach Status-Typ** (`znuny_tickets_total`): aggregierte Anzahlen für offene, ausstehende und geschlossene Tickets.
-- **Nach individuellem Status** (`znuny_tickets_by_state`): ein Datenpunkt pro konfiguriertem Ticket-Status.
-- **Heute erstellt** (`znuny_tickets_created_today`): seit Mitternacht (lokale Serverzeit) erstellte Tickets, nützlich für tägliche Volumen-Dashboards.
 
 ## Queue-Metriken
 
@@ -33,13 +32,11 @@ Beide Metriken tragen die Labels `queue` und `queue_id`.
 
 Die folgenden Metriken helfen dabei, die SLA-Einhaltung auf einen Blick zu überwachen:
 
-| Metrik | Beschreibung |
-|---|---|
-| `znuny_tickets_escalated` | Offene Tickets, die die allgemeine Eskalationsfrist überschritten haben |
-| `znuny_tickets_first_response_overdue` | Offene Tickets, bei denen die Erstantwort überfällig ist |
-| `znuny_tickets_update_overdue` | Offene Tickets, bei denen ein Folge-Update überfällig ist |
-| `znuny_tickets_solution_overdue` | Offene Tickets, bei denen die Lösung überfällig ist |
-| `znuny_tickets_escalation_warning` | Offene Tickets, die sich der Eskalationsfrist nähern (innerhalb von 30 Minuten) |
+- `znuny_tickets_escalated` - Offene Tickets, die die allgemeine Eskalationsfrist überschritten haben
+- `znuny_tickets_first_response_overdue` - Offene Tickets, bei denen die Erstantwort überfällig ist
+- `znuny_tickets_update_overdue` - Offene Tickets, bei denen ein Folge-Update überfällig ist
+- `znuny_tickets_solution_overdue` - Offene Tickets, bei denen die Lösung überfällig ist
+- `znuny_tickets_escalation_warning` - Offene Tickets, die sich der Eskalationsfrist nähern (innerhalb von 30 Minuten)
 
 ## Agenten- und Sitzungsmetriken
 

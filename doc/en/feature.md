@@ -11,8 +11,8 @@ The following endpoints are available:
 | `/metrics` | Prometheus text exposition format (version 0.0.4) |
 | `/health` | Liveness check — returns `OK` |
 
-::: note :::
-A restart of the Znuny Daemon is required to have the exporter available.
+::: tip :::
+**A restart of the Znuny Daemon after the insallation is required to have the exporter available.**
 :::::::::::
 
 ## Ticket metrics
@@ -36,13 +36,11 @@ Both metrics carry `queue` and `queue_id` labels.
 
 The following metrics help monitor SLA compliance at a glance:
 
-| Metric | Description |
-|---|---|
-| `znuny_tickets_escalated` | Open tickets that have breached the overall escalation deadline |
-| `znuny_tickets_first_response_overdue` | Open tickets overdue for first agent response |
-| `znuny_tickets_update_overdue` | Open tickets overdue for a follow-up update |
-| `znuny_tickets_solution_overdue` | Open tickets overdue for resolution |
-| `znuny_tickets_escalation_warning` | Open tickets approaching escalation deadline (within 30 minutes) |
+- `znuny_tickets_escalated` - Open tickets that have breached the overall escalation deadline
+- `znuny_tickets_first_response_overdue` - Open tickets overdue for first agent response
+- `znuny_tickets_update_overdue` - Open tickets overdue for a follow-up update
+- `znuny_tickets_solution_overdue` - Open tickets overdue for resolution
+- `znuny_tickets_escalation_warning` - Open tickets approaching escalation deadline (within 30 minutes)
 
 ## Agent and session metrics
 
