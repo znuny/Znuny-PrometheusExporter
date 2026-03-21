@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="2.0" init="Framework">
+<Setting Name="DaemonModules###PrometheusExporter" Required="0" Valid="1">
+        <Description Translatable="1">
+            Prometheus metrics exporter daemon module.
+            Exposes a /metrics HTTP endpoint on the configured port.
+        </Description>
+        <Navigation>Core::Daemon::DaemonModules</Navigation>
+        <Value>
+            <Hash>
+                <Item Key="Module">Kernel::System::Daemon::DaemonModules::PrometheusExporter</Item>
+            </Hash>
+        </Value>
+    </Setting>
+    <Setting Name="Daemon::PrometheusExporter::Port" Required="0" Valid="1">
+        <Description Translatable="1">
+            TCP port for the Prometheus metrics exporter (default: 10111).
+        </Description>
+        <Navigation>Core::Daemon::PrometheusExporter</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="^\d+$">10111</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Daemon::PrometheusExporter::Bind" Required="0" Valid="1">
+        <Description Translatable="1">
+            IP address the Prometheus metrics exporter binds to (default: 127.0.0.1).
+            Use 0.0.0.0 to listen on all interfaces.
+        </Description>
+        <Navigation>Core::Daemon::PrometheusExporter</Navigation>
+        <Value>
+            <Item ValueType="String">127.0.0.1</Item>
+        </Value>
+    </Setting>
+</otrs_config>
