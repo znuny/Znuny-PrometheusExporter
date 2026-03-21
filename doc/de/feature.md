@@ -11,9 +11,6 @@ Die folgenden Endpunkte stehen zur Verfügung:
 | `/metrics` | Prometheus-Textformat (Version 0.0.4) |
 | `/health` | Liveness-Check — gibt `OK` zurück |
 
-::: note :::
-Es ist notwedig der Znuny Daemon neu zu starten damit der Exporter startet.
-
 
 ## Ticket-Metriken
 
