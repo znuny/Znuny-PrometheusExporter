@@ -12,7 +12,7 @@ The following endpoints are available:
 | `/health` | Liveness check — returns `OK` |
 
 ::: tip :::
-**A restart of the Znuny Daemon after the insallation is required to have the exporter available.**
+**A restart of the Znuny Daemon after the installation is required.**
 :::::::::::
 
 ## Ticket metrics
