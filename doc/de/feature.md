@@ -5,7 +5,7 @@
 Dieses Add-on integriert einen Prometheus-kompatiblen Metriken-Exporter direkt in den Znuny-Daemon-Prozess. Ein separates Skript, ein Cron-Job oder eine Service-Unit ist nicht erforderlich. Nach der Installation stellt der Daemon einen `/metrics`-HTTP-Endpunkt bereit, den jeder Prometheus-Server abfragen kann.
 
 ::: tip :::
-**Es ist ein Neustart des Znuny Daemon ist nach der Installation des Add-ons notwendig.**
+**Es ist ein Neustart des Znuny Daemon nach der Installation des Add-ons notwendig.**
 :::::::::::
 
 Die folgenden Endpunkte stehen zur Verfügung:
