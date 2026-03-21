@@ -43,7 +43,7 @@ Configuration via SysConfig:
 
 =over 4
 
-=item C<Daemon::PrometheusExporter::Port> (default: 9405)
+=item C<Daemon::PrometheusExporter::Port> (default: 10111)
 
 =item C<Daemon::PrometheusExporter::Bind> (default: 127.0.0.1)
 
@@ -65,7 +65,7 @@ sub new {
 
     my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
 
-    $Self->{Port} = $ConfigObject->Get('Daemon::PrometheusExporter::Port') || 9405;
+    $Self->{Port} = $ConfigObject->Get('Daemon::PrometheusExporter::Port') || 10111;
     $Self->{Bind} = $ConfigObject->Get('Daemon::PrometheusExporter::Bind') || '127.0.0.1';
 
     # Optional feature flags — checked once at startup.

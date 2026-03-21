@@ -6,9 +6,9 @@ The exporter is active immediately after installation. All settings are availabl
 
 ### `Daemon::PrometheusExporter::Port`
 
-The TCP port on which the exporter listens. The default value is `9405`, which is in the unofficial Prometheus exporter port range.
+The TCP port on which the exporter listens. The default value is `10111`, which is in the unofficial Prometheus exporter port range.
 
-Change this setting if another service already occupies port 9405 on your system.
+Change this setting if another service already occupies port 10111 on your system.
 
 ### `Daemon::PrometheusExporter::Bind`
 
@@ -24,7 +24,7 @@ Add the following job to your `prometheus.yml` to scrape the Znuny metrics:
 scrape_configs:
   - job_name: znuny
     static_configs:
-      - targets: ['localhost:9405']
+      - targets: ['localhost:10111']
 ```
 
 Replace `localhost` with the hostname or IP of your Znuny server if Prometheus runs on a different host.

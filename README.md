@@ -19,7 +19,7 @@ The exporter is active immediately after installation with sensible defaults. Op
 
 | Setting | Default | Description |
 |---|---|---|
-| `Daemon::PrometheusExporter::Port` | `9405` | TCP port the exporter listens on |
+| `Daemon::PrometheusExporter::Port` | `10111` | TCP port the exporter listens on |
 | `Daemon::PrometheusExporter::Bind` | `127.0.0.1` | IP address to bind to (`0.0.0.0` for all interfaces) |
 
 **Exposed metrics**
