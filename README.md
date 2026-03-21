@@ -5,6 +5,7 @@
       <img alt="Znuny" src="https://www.znuny.com/assets/znuny-logo-black.svg" width="300">
     </picture>
   </a>
+
   ![Build status](https://badge.proxy.znuny.com/Znuny-PrometheusExporter/dev)
 </div>
 
