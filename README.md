@@ -57,6 +57,7 @@ The exporter is active immediately after installation with sensible defaults. Op
 | `znuny_open_tickets_by_tickettype` | `tickettype`, `tickettype_id` | Open ticket count per type (only when `Ticket::Type` is enabled) |
 | `znuny_tickets_by_service` | `service`, `service_id` | Ticket count per service; `service=""` means no service assigned (only when `Ticket::Service` is enabled) |
 | `znuny_open_tickets_by_service` | `service`, `service_id` | Open ticket count per service; `service=""` means no service assigned (only when `Ticket::Service` is enabled) |
+| `znuny_open_tickets_by_priority` | `priority`, `priority_id` | Open ticket count per priority |
 | `znuny_scrape_duration_seconds` | — | Time taken to collect all metrics |
 | `znuny_scrape_success` | — | `1` if last collection succeeded, `0` otherwise |
 

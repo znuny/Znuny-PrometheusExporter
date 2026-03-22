@@ -57,7 +57,11 @@ Wenn die Funktion `Ticket::Service` in Znuny aktiviert ist, werden zwei Metriken
 - `znuny_tickets_by_service` — Ticket-Anzahlen pro Service (alle Status).
 - `znuny_open_tickets_by_service` — Anzahl offener Tickets pro Service.
 
-## Scrape-Gesundheitsmetriken
+## Prioritäts-Metriken
+
+- `znuny_open_tickets_by_priority` — Anzahl offener Tickets pro Priorität, mit den Labels `priority` und `priority_id`.
+
+## Sonstiges
 
 Jeder Scrape gibt außerdem aus:
 
