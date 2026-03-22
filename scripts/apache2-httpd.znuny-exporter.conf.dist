@@ -1,0 +1,24 @@
+# --
+# Copyright (C) 2012 Znuny GmbH, https://znuny.com/
+# --
+# This software comes with ABSOLUTELY NO WARRANTY. For details, see
+# the enclosed file COPYING for license information (AGPL). If you
+# did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
+# --
+
+<Location "/metrics">
+
+    # Proxy to the local exporter
+    ProxyPreserveHost Off
+    ProxyPass        "http://127.0.0.1:10111/metrics"
+    ProxyPassReverse "http://127.0.0.1:10111/metrics"
+
+    # Allow requests only from these IP addresses
+    # Adjust this as required or change it to HTTP Basic Authentication
+    Require ip 198.51.100.42 2001:db8:85a3::8a2e:370:7334
+
+    # Security headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Cache-Control "no-store"
+
+</Location>

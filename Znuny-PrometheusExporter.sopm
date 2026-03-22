@@ -10,5 +10,6 @@
     <Filelist>
         <File Permission="660" Location="Kernel/Config/Files/XML/PrometheusExporter.xml"/>
         <File Permission="660" Location="Kernel/System/Daemon/DaemonModules/PrometheusExporter.pm"/>
+        <File Permission="660" Location="scripts/apache2-httpd.znuny-exporter.conf.dist"/>
     </Filelist>
 </otrs_package>
