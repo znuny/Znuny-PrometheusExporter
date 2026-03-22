@@ -23,6 +23,7 @@ our @ObjectDependencies = (
     'Kernel::System::Log',
     'Kernel::System::Ticket',
     'Kernel::System::Queue',
+    'Kernel::System::Priority',
     'Kernel::System::State',
     'Kernel::System::Type',
     'Kernel::System::Service',
@@ -705,6 +706,38 @@ sub _CollectMetrics {
             Name => 'znuny_open_tickets_by_service',
             Help =>
                 'Open ticket count per service; service="" means no service assigned (only emitted when Ticket::Service is enabled)',
+            Lines => \@Lines,
+        );
+    }
+
+    # -------------------------------------------------------------------
+    # 12. Open ticket counts per priority
+    # -------------------------------------------------------------------
+    {
+        my $PriorityObject = $Kernel::OM->Get('Kernel::System::Priority');
+        my %Priorities     = $PriorityObject->PriorityList(
+            Valid  => 1,
+            UserID => 1
+        );
+        my @Lines;
+
+        for my $PriorityID ( sort { $a <=> $b } keys %Priorities ) {
+            my $Count = $TicketObject->TicketSearch(
+                PriorityIDs => [$PriorityID],
+                StateType   => 'Open',
+                UserID      => 1,
+                Result      => 'COUNT',
+            ) // 0;
+            push @Lines,
+                sprintf(
+                'znuny_open_tickets_by_priority{priority="%s",priority_id="%d"} %d',
+                _Label( $Priorities{$PriorityID} ), $PriorityID, $Count
+                );
+        }
+
+        $Out .= _GaugeBlock(
+            Name  => 'znuny_open_tickets_by_priority',
+            Help  => 'Open ticket count per priority',
             Lines => \@Lines,
         );
     }

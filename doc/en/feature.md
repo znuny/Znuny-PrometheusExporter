@@ -61,6 +61,10 @@ When the `Ticket::Service` feature is enabled in Znuny, two metrics are emitted 
 - `znuny_tickets_by_service` — ticket counts per service (all states).
 - `znuny_open_tickets_by_service` — open ticket counts per service.
 
+## Priority metrics
+
+- `znuny_open_tickets_by_priority` — open ticket counts per priority, with `priority` and `priority_id` labels.
+
 ## Scrape health metrics
 
 Each scrape also emits:
