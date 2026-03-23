@@ -18,7 +18,7 @@ This add-on exposes a Prometheus-compatible `/metrics` HTTP endpoint directly fr
 
 **Prerequisites**
 
-- Znuny 7.3
+- Znuny 6.5
 
 **Installation**
 
