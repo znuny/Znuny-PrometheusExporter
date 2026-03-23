@@ -271,8 +271,9 @@ sub _HandleRequest {
     chomp $RequestLine;
 
     # Drain remaining HTTP headers.
-    LAST: while ( my $Line = <$Client> ) {
-        last LAST if $Line =~ m{^\r?\n$};
+    LINE:
+    while ( my $Line = <$Client> ) {
+        last LINE if $Line =~ m{^\r?\n$};
     }
 
     my ( undef, $Path ) = $RequestLine =~ m{^([A-Z]+)\s+(\S+)};
