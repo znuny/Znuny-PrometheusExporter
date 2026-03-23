@@ -8,7 +8,8 @@
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">Exposes a Prometheus-compatible /metrics HTTP endpoint via a Znuny Daemon module. Provides ticket, queue, state, agent, session, escalation, and SLA metrics without requiring a separate exporter process.</Description>
     <Filelist>
-        <File Permission="660" Location="Kernel/Config/Files/XML/PrometheusExporter.xml"/>
+        <File Permission="660" Location="Kernel/Config/Files/XML/ZnunyPrometheusExporter.xml"/>
+        <File Permission="660" Location="Kernel/Language/de_ZnunyPrometheusExporter.pm"/>
         <File Permission="660" Location="Kernel/System/Daemon/DaemonModules/PrometheusExporter.pm"/>
         <File Permission="660" Location="scripts/apache2-httpd.znuny-exporter.conf.dist"/>
     </Filelist>
