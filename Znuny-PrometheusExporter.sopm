@@ -7,6 +7,7 @@
     <URL>https://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
     <Description Lang="en">Exposes a Prometheus-compatible /metrics HTTP endpoint via a Znuny Daemon module. Provides ticket, queue, state, agent, session, escalation, and SLA metrics without requiring a separate exporter process.</Description>
+    <Description Lang="hu">Elérhetővé tesz egy Prometheus-kompatibilis /metrics HTTP-végpontot egy Znuny démon modulon keresztül. Jegy-, várólista-, állapot-, ügyintéző-, munkamenet-, eszkaláció- és SLA-mérőszámokat biztosít külön exportáló folyamat szükségessége nélkül.</Description>
     <ChangeLog Version="6.5.1" Date="2026-03-23 12:11:21 +0100">Initial release for Znuny 6.5.</ChangeLog>
     <Filelist>
         <File Permission="660" Location="Kernel/Config/Files/XML/ZnunyPrometheusExporter.xml"/>
