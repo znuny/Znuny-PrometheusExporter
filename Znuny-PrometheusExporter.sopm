@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<otrs_package version="1.1">
+<package version="1.1">
     <Name>Znuny-PrometheusExporter</Name>
     <Version>7.3.1</Version>
-    <Framework>7.3.x</Framework>
+    <Framework>7.5.x</Framework>
     <Vendor>Znuny GmbH</Vendor>
     <URL>https://znuny.com/</URL>
     <License>GNU AFFERO GENERAL PUBLIC LICENSE Version 3, November 2007</License>
@@ -14,4 +14,4 @@
         <File Permission="660" Location="Kernel/System/Daemon/DaemonModules/PrometheusExporter.pm"/>
         <File Permission="660" Location="scripts/apache2-httpd.znuny-exporter.conf.dist"/>
     </Filelist>
-</otrs_package>
+</package>
